@@ -3,7 +3,7 @@
  * Cachea todos los assets estáticos para funcionamiento offline.
  */
 
-const CACHE_NAME = 'maltrago-v13';
+const CACHE_NAME = 'maltrago-v14';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -18,8 +18,8 @@ const ASSETS_TO_CACHE = [
   './Assets/Fondos/fndo_cajas.png',
   './Assets/Fondos/fndo_nombrePersonaje.png',
   './Assets/Fondos/fndo_pociones.png',
+  './Assets/Fondos/fndo_retos.png',
   // Botones
-  './Assets/Botones/btn_fondoRetos.png',
   './Assets/Botones/btn_fondoAjustes.png',
   // Iconos
   './Assets/Iconos/carta.png',

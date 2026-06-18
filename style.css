@@ -325,7 +325,7 @@ h3 {
   position: relative;
   min-height: 5.5rem;
   width: 100%;
-  background: url('Assets/Botones/btn_fondoRetos.png') center/100% 100% no-repeat;
+  background: url('Assets/Fondos/fndo_retos.png') center/100% 100% no-repeat;
   font-family: var(--font-display);
   font-size: clamp(1.1rem, 5vw, 1.4rem);
   color: var(--color-parchment);
@@ -601,7 +601,7 @@ h3 {
   position: relative;
   width: 100%;
   min-height: 6rem;
-  background: url('Assets/Botones/btn_fondoRetos.png') center/100% 100% no-repeat;
+  background: url('Assets/Fondos/fndo_retos.png') center/100% 100% no-repeat;
   font-family: var(--font-display);
   font-size: clamp(1.2rem, 5.5vw, 1.6rem);
   color: var(--color-parchment);
