@@ -28,7 +28,7 @@
 let gameState = {
   playerName: '',
   selectedGoblinId: null,
-  potions: 3,
+  potions: 1,
   antidotes: 1,
   isDead: false,
   activeSpells: [],      // conjuros S persistentes: [{id, titulo, texto}]
