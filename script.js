@@ -227,14 +227,14 @@ function actualizarBotonesJuego() {
   const btnRevive = document.getElementById('btn-revive');
 
   if (gameState.isDead) {
-    btnReto.setAttribute('aria-disabled', 'true');
-    btnReto.disabled = true;
     btnRevive.classList.add('visible');
   } else {
-    btnReto.setAttribute('aria-disabled', 'false');
-    btnReto.disabled = false;
     btnRevive.classList.remove('visible');
   }
+
+  // El botón de Retos siempre está disponible para todos (tanto vivos como fantasmas)
+  btnReto.setAttribute('aria-disabled', 'false');
+  btnReto.disabled = false;
 }
 
 /* ============================================================
@@ -471,7 +471,6 @@ let hechizoPendiente = null;
  * Abre el popup de reto con un hechizo aleatorio.
  */
 function abrirPopupReto() {
-  if (gameState.isDead) return;
 
   // Selección aleatoria del mazo completo
   const hechizo = SPELLS_DECK[Math.floor(Math.random() * SPELLS_DECK.length)];
