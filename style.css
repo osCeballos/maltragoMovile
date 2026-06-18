@@ -360,11 +360,11 @@ h3 {
 }
 
 .hud-potions {
-  /* 56×56px táctil cómodo */
-  width: 4.5rem;
-  height: 4.5rem;
-  min-width: 4.5rem;
-  min-height: 4.5rem;
+  /* 64×64px táctil cómodo */
+  width: 5.5rem;
+  height: 5.5rem;
+  min-width: 5.5rem;
+  min-height: 5.5rem;
   background: url('Assets/Fondos/fndo_pociones.png') center/100% 100% no-repeat;
   display: flex;
   align-items: center;
@@ -375,24 +375,24 @@ h3 {
 }
 
 .hud-potions img {
-  width: 1.5rem;
+  width: 2.2rem;
   height: auto;
 }
 
 .hud-potions-count {
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: var(--color-text-dark);
   font-weight: 700;
   line-height: 1;
 }
 
 #btn-settings {
-  /* 56×56px táctil cómodo */
-  width: 4.5rem;
-  height: 4.5rem;
-  min-width: 4.5rem;
-  min-height: 4.5rem;
+  /* 64×64px táctil cómodo */
+  width: 5.5rem;
+  height: 5.5rem;
+  min-width: 5.5rem;
+  min-height: 5.5rem;
   background: url('Assets/Botones/btn_fondoAjustes.png') center/100% 100% no-repeat;
   display: flex;
   align-items: center;
@@ -406,39 +406,21 @@ h3 {
 }
 
 #btn-settings img {
-  width: 1.6rem;
-  height: auto;
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: contain;
+  display: block;
+  margin: auto;
   pointer-events: none;
 }
 
-/* — Área de conjuros activos — */
+/* — Área de conjuros activos — OCULTA completamente al usuario — */
 .active-spells-bar {
-  display: flex;
-  gap: var(--sp-xs);
-  padding: var(--sp-xs) var(--sp-sm);
-  overflow-x: auto;
-  scrollbar-width: none;
-  min-height: 0;
-  flex-shrink: 0;
-}
-
-.active-spells-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.active-spells-bar:empty {
-  display: none;
+  display: none !important;
 }
 
 .spell-chip {
-  white-space: nowrap;
-  font-size: 0.7rem;
-  background: var(--color-spell-badge);
-  color: var(--color-parchment);
-  border: 1px solid var(--color-gold);
-  border-radius: 999px;
-  padding: 3px var(--sp-sm);
-  flex-shrink: 0;
+  display: none !important;
 }
 
 /* — Zona del goblin (centro) — */
@@ -508,10 +490,12 @@ h3 {
 .cards-area {
   display: flex;
   gap: var(--sp-sm);
-  padding: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
   justify-content: center;
   align-items: center;
   z-index: var(--z-game);
+  /* Espacio extra para que las sombras de las cartas no se recorten */
+  overflow: visible;
 }
 
 .card-slot {
@@ -524,6 +508,7 @@ h3 {
   cursor: pointer;
   flex-shrink: 0;
   transition: transform var(--transition-fast);
+  /* Sin overflow:hidden para que box-shadow y bordes no se corten */
 }
 
 .card-slot:not(.revealed):hover {
@@ -550,7 +535,7 @@ h3 {
   position: absolute;
   inset: 0;
   border-radius: var(--radius-sm);
-  overflow: hidden;
+  /* overflow: hidden eliminado — causaba que los bordes de las cartas se cortaran */
   box-shadow: var(--shadow-card);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;

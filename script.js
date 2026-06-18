@@ -113,17 +113,10 @@ function seleccionarGoblin(id) {
     cell.setAttribute('aria-checked', isSelected ? 'true' : 'false');
   });
 
-  // Mostrar info del goblin
+  // Mostrar info del goblin (sin etiquetas de rasgos)
   const infoEl = document.getElementById('goblin-info');
-  const rasgosHtml = goblin.rasgos.length
-    ? `<div class="goblin-rasgos">
-        ${goblin.rasgos.map((r) => `<span class="rasgo-badge">${r}</span>`).join('')}
-       </div>`
-    : '';
-
   infoEl.innerHTML = `
     <span class="goblin-info-desc">${goblin.descripcion}</span>
-    ${rasgosHtml}
   `;
 
   anunciarLiveRegion(`Goblin seleccionado.`);
@@ -961,7 +954,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* — Botones dentro del popup ajustes — */
   document.getElementById('btn-close-settings').addEventListener('click', cerrarAjustes);
   document.getElementById('btn-restart').addEventListener('click', reiniciarPartida);
-  document.getElementById('btn-install-pwa').addEventListener('click', instalarPWA);
+  // btn-install-pwa eliminado
 
   /* — Botón revivir — */
   document.getElementById('btn-revive').addEventListener('click', revivirGoblin);
@@ -983,16 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* — Inicializar visibilidad del botón de instalación según modo Standalone — */
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-  const btnInstall = document.getElementById('btn-install-pwa');
-  if (btnInstall) {
-    if (isStandalone) {
-      btnInstall.hidden = true;
-    } else {
-      btnInstall.hidden = false; // Mostrar botón en el navegador normal
-    }
-  }
+  /* — Inicializar visibilidad del botón de instalación (botón eliminado) — */
 
   /* — PWA — */
   registrarServiceWorker();

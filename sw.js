@@ -3,7 +3,7 @@
  * Cachea todos los assets estáticos para funcionamiento offline.
  */
 
-const CACHE_NAME = 'maltrago-v12';
+const CACHE_NAME = 'maltrago-v13';
 
 const ASSETS_TO_CACHE = [
   './',

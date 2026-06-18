@@ -29,7 +29,7 @@
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Lato:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- CSS principal -->
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 
   <!-- Datos estructurados Schema.org -->
   <script type="application/ld+json">
@@ -212,7 +212,7 @@
       aria-describedby="popup-reto-text"
     >
       <div class="popup-box" id="popup-reto-box" tabindex="-1">
-        <!-- Categoría del hechizo (oculta visualmente, solo para aria) -->
+        <!-- Categoría del hechizo (oculta siempre — solo aria) -->
         <span id="popup-reto-category" class="popup-category-badge" hidden></span>
 
         <!-- Título del hechizo -->
@@ -221,10 +221,8 @@
         <!-- Texto/descripción del hechizo -->
         <p id="popup-reto-text" class="popup-text"></p>
 
-        <!-- Nota de conjuro persistente (visible solo en S01–S11) -->
-        <p id="popup-reto-persistent" class="popup-persistent-note" hidden>
-          🔮 Conjuro activo — permanece en juego
-        </p>
+        <!-- Nota de conjuro persistente — OCULTA siempre -->
+        <p id="popup-reto-persistent" class="popup-persistent-note" hidden style="display:none"></p>
 
         <!-- Indicador de toque -->
         <p class="popup-continue" aria-hidden="true">TOCA PARA CONTINUAR...</p>
@@ -247,15 +245,6 @@
 
         <button
           type="button"
-          id="btn-install-pwa"
-          class="settings-btn settings-btn--primary"
-          aria-label="Instalar aplicación en el dispositivo"
-        >
-          📱 Instalar app
-        </button>
-
-        <button
-          type="button"
           id="btn-restart"
           class="settings-btn settings-btn--danger"
           aria-label="Reiniciar partida y volver al inicio"
@@ -274,46 +263,13 @@
       </div>
     </div><!-- /popup-settings -->
 
-    <!-- ═══════════════════════════════════════════════════
-         POPUP: INSTRUCCIONES DE INSTALACIÓN PWA
-         ═══════════════════════════════════════════════════ -->
-    <div
-      id="popup-install-instructions"
-      class="popup-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="install-title"
-    >
-      <div class="settings-box">
-        <h2 id="install-title" class="settings-title">📱 Cómo instalar</h2>
-        
-        <p class="popup-text" style="font-size: 0.9rem; color: var(--color-text-light); text-align: left; margin-bottom: var(--sp-sm);">
-          Para llevar la taberna goblin a tu pantalla de inicio:
-        </p>
-
-        <div style="font-size: 0.82rem; text-align: left; color: var(--color-text-muted); display: flex; flex-direction: column; gap: var(--sp-sm); line-height: 1.4;">
-          <p><strong>iOS (Safari):</strong> Pulsa el botón de <strong>Compartir</strong> 📤 y elige <strong>"Añadir a la pantalla de inicio"</strong>.</p>
-          <p><strong>Android / Chrome:</strong> Pulsa los tres puntos de menú ⋮ y elige <strong>"Instalar aplicación"</strong> (o pulsa aquí si tu navegador lo permite).</p>
-          <p><strong>Prueba Local:</strong> La instalación requiere abrir la app a través de un servidor local (ej: <code>http://localhost</code>). Si abres el archivo <code>index.html</code> directamente (protocolo <code>file://</code>), el navegador desactiva la instalación.</p>
-        </div>
-
-        <button
-          type="button"
-          id="btn-close-install"
-          class="settings-btn settings-btn--secondary"
-          style="margin-top: var(--sp-md); min-height: var(--touch-min);"
-          aria-label="Cerrar instrucciones de instalación"
-        >
-          Cerrar
-        </button>
-      </div>
-    </div><!-- /popup-install-instructions -->
+    <!-- popup-install-instructions eliminado -->
 
   </div><!-- /app -->
 
   <!-- Scripts — en el orden correcto de dependencias -->
-  <script src="spells.js?v=12" defer></script>
-  <script src="goblins.js?v=12" defer></script>
-  <script src="script.js?v=12" defer></script>
+  <script src="spells.js?v=13" defer></script>
+  <script src="goblins.js?v=13" defer></script>
+  <script src="script.js?v=13" defer></script>
 </body>
 </html>
