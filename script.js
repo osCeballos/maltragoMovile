@@ -375,10 +375,7 @@ function seleccionarCarta(index) {
 function aplicarEfectoCarta(tipo) {
   if (tipo === 'good') {
     // La propia carta ya muestra visualmente el resultado — sin toast
-    // Carta buena: gana 1 poción
-    gameState.potions = Math.min(MAX_POTIONS, gameState.potions + 1);
-    document.getElementById('hud-potions-count').textContent = gameState.potions;
-    addLog(`Poción segura 💚 Ganas 1 poción. Total: ${gameState.potions}.`);
+    addLog('Poción segura... por esta vez 💚');
   } else {
     addLog('¡Poción envenenada! 💀');
     perderPocion();
