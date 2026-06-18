@@ -41,7 +41,7 @@ let gameState = {
    ============================================================ */
 
 const MAX_POTIONS   = 5;   // máximo pociones acumulables (diseño de juego)
-const MAX_ANTIDOTES = 3;   // máximo antídotos (reglas)
+const MAX_ANTIDOTES = 1;   // máximo antídotos — siempre 1 (reglas)
 const INITIAL_POTIONS    = 3;
 const INITIAL_ANTIDOTES  = 1;
 
