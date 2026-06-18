@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <!-- Viewport para móvil: ancho del dispositivo, sin zoom inicial -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3d2008">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mal Trago">
+
+  <!-- SEO y metadatos -->
+  <title>Mal Trago – Goblins y Pociones</title>
+  <meta name="description" content="Asistente de mesa para el juego de cartas Mal Trago. Selecciona tu goblin, gestiona tus pociones y lanza hechizos desde tu móvil.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Mal Trago – Goblins y Pociones">
+  <meta property="og:description" content="El juego de taberna goblin en tu móvil.">
+  <meta property="og:type" content="website">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Preconexión para Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fuentes: MedievalSharp para display, Lato para cuerpo -->
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="style.css?v=12">
+
+  <!-- Datos estructurados Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Mal Trago – Goblins y Pociones",
+    "description": "Asistente de mesa para el juego de cartas Mal Trago",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web"
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Región aria-live para anuncios dinámicos de lectores de pantalla -->
+  <div id="live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Elemento toast eliminado: las notificaciones de juego han sido desactivadas -->
+
+  <!-- ═══════════════════════════════════════════════════════
+       CONTENEDOR PRINCIPAL DE LA APLICACIÓN
+       ═══════════════════════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- ═══════════════════════════════════════════════════
+         PANTALLA 1: INICIO
+         ═══════════════════════════════════════════════════ -->
+    <main id="screen-start" class="screen active" aria-label="Pantalla de inicio">
+
+
+
+
+
+      <!-- Selector de goblin -->
+      <section class="goblin-section" aria-labelledby="goblin-section-title">
+        <h2 id="goblin-section-title" class="goblin-section-title">Elige tu goblin</h2>
+
+        <!-- Cuadrícula 3×3 — generada por JS con inicializarSelectorGoblins() -->
+        <div
+          id="goblin-grid"
+          class="goblin-grid"
+          role="radiogroup"
+          aria-label="Selección de goblin"
+          aria-required="true"
+        >
+          <!-- Contenido insertado por JS -->
+        </div>
+
+        <!-- Información del goblin seleccionado -->
+        <div id="goblin-info" class="goblin-info" aria-live="polite">
+          <p class="goblin-info-empty">Toca un goblin para ver su información</p>
+        </div>
+      </section>
+
+      <!-- Botón de inicio -->
+      <button
+        type="button"
+        id="btn-start-game"
+        aria-label="Comenzar partida"
+      >
+        Empezar
+      </button>
+
+    </main><!-- /screen-start -->
+
+
+    <!-- ═══════════════════════════════════════════════════
+         PANTALLA 2: JUEGO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <section id="screen-game" class="screen" aria-label="Pantalla de juego">
+
+      <!-- HUD Superior -->
+      <header class="game-hud" role="banner">
+
+
+        <!-- Contador de pociones -->
+        <div
+          class="hud-potions"
+          id="hud-potions"
+          aria-label="Pociones restantes"
+          aria-live="polite"
+        >
+          <img
+            src="Assets/Iconos/pocion.png"
+            alt=""
+            width="22"
+            height="22"
+            id="potion-icon"
+          >
+          <span class="hud-potions-count" id="hud-potions-count">3</span>
+        </div>
+
+        <!-- Botón ajustes -->
+        <button
+          type="button"
+          id="btn-settings"
+          aria-label="Abrir ajustes"
+        >
+          <img
+            src="Assets/Iconos/ajustes.png"
+            alt=""
+            width="24"
+            height="24"
+          >
+        </button>
+      </header>
+
+      <!-- Barra de conjuros persistentes activos -->
+      <div
+        id="active-spells-bar"
+        class="active-spells-bar"
+        aria-label="Conjuros activos"
+        aria-live="polite"
+      >
+        <!-- Chips de conjuros insertados por JS -->
+      </div>
+
+
+
+
+
+      <!-- Escenario del goblin -->
+      <div class="goblin-stage" aria-hidden="true">
+        <img
+          id="goblin-avatar"
+          src=""
+          alt=""
+          width="240"
+          height="240"
+        >
+        <!-- Mensaje de muerto -->
+        <div id="dead-message" aria-live="assertive">💀 Goblin Muerto</div>
+      </div>
+
+      <!-- Overlay de barriles por delante del escenario -->
+      <div id="goblin-overlay" aria-hidden="true"></div>
+
+      <!-- Zona de cartas -->
+      <section
+        class="cards-area"
+        id="cards-area"
+        aria-label="Cartas en mano"
+        aria-live="polite"
+      >
+        <!-- Ranuras de cartas insertadas por JS -->
+      </section>
+
+      <!-- Botón Retos y botón Revivir -->
+      <div class="reto-area">
+        <button
+          type="button"
+          id="btn-reto"
+          aria-label="Lanzar reto — hechizo aleatorio"
+        >
+          Retos
+        </button>
+
+        <button
+          type="button"
+          id="btn-revive"
+          aria-label="Revivir — activar cuando otro goblin muera por tu reto"
+        >
+          💀 Esperando revivir...
+        </button>
+      </div>
+
+    </section><!-- /screen-game -->
+
+
+    <!-- ═══════════════════════════════════════════════════
+         POPUP: RETO (hechizo)
+         ═══════════════════════════════════════════════════ -->
+    <div
+      id="popup-reto"
+      class="popup-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="popup-reto-title"
+      aria-describedby="popup-reto-text"
+    >
+      <div class="popup-box" id="popup-reto-box" tabindex="-1">
+        <!-- Categoría del hechizo (oculta visualmente, solo para aria) -->
+        <span id="popup-reto-category" class="popup-category-badge" hidden></span>
+
+        <!-- Título del hechizo -->
+        <h2 id="popup-reto-title" class="popup-title"></h2>
+
+        <!-- Texto/descripción del hechizo -->
+        <p id="popup-reto-text" class="popup-text"></p>
+
+        <!-- Nota de conjuro persistente (visible solo en S01–S11) -->
+        <p id="popup-reto-persistent" class="popup-persistent-note" hidden>
+          🔮 Conjuro activo — permanece en juego
+        </p>
+
+        <!-- Indicador de toque -->
+        <p class="popup-continue" aria-hidden="true">TOCA PARA CONTINUAR...</p>
+      </div>
+    </div><!-- /popup-reto -->
+
+
+    <!-- ═══════════════════════════════════════════════════
+         POPUP: AJUSTES
+         ═══════════════════════════════════════════════════ -->
+    <div
+      id="popup-settings"
+      class="popup-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-title"
+    >
+      <div class="settings-box">
+        <h2 id="settings-title" class="settings-title">⚙️ Ajustes</h2>
+
+        <button
+          type="button"
+          id="btn-install-pwa"
+          class="settings-btn settings-btn--primary"
+          aria-label="Instalar aplicación en el dispositivo"
+        >
+          📱 Instalar app
+        </button>
+
+        <button
+          type="button"
+          id="btn-restart"
+          class="settings-btn settings-btn--danger"
+          aria-label="Reiniciar partida y volver al inicio"
+        >
+          🔄 Reiniciar partida
+        </button>
+
+        <button
+          type="button"
+          id="btn-close-settings"
+          class="settings-btn settings-btn--secondary"
+          aria-label="Cerrar menú de ajustes"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div><!-- /popup-settings -->
+
+    <!-- ═══════════════════════════════════════════════════
+         POPUP: INSTRUCCIONES DE INSTALACIÓN PWA
+         ═══════════════════════════════════════════════════ -->
+    <div
+      id="popup-install-instructions"
+      class="popup-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="install-title"
+    >
+      <div class="settings-box">
+        <h2 id="install-title" class="settings-title">📱 Cómo instalar</h2>
+        
+        <p class="popup-text" style="font-size: 0.9rem; color: var(--color-text-light); text-align: left; margin-bottom: var(--sp-sm);">
+          Para llevar la taberna goblin a tu pantalla de inicio:
+        </p>
+
+        <div style="font-size: 0.82rem; text-align: left; color: var(--color-text-muted); display: flex; flex-direction: column; gap: var(--sp-sm); line-height: 1.4;">
+          <p><strong>iOS (Safari):</strong> Pulsa el botón de <strong>Compartir</strong> 📤 y elige <strong>"Añadir a la pantalla de inicio"</strong>.</p>
+          <p><strong>Android / Chrome:</strong> Pulsa los tres puntos de menú ⋮ y elige <strong>"Instalar aplicación"</strong> (o pulsa aquí si tu navegador lo permite).</p>
+          <p><strong>Prueba Local:</strong> La instalación requiere abrir la app a través de un servidor local (ej: <code>http://localhost</code>). Si abres el archivo <code>index.html</code> directamente (protocolo <code>file://</code>), el navegador desactiva la instalación.</p>
+        </div>
+
+        <button
+          type="button"
+          id="btn-close-install"
+          class="settings-btn settings-btn--secondary"
+          style="margin-top: var(--sp-md); min-height: var(--touch-min);"
+          aria-label="Cerrar instrucciones de instalación"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div><!-- /popup-install-instructions -->
+
+  </div><!-- /app -->
+
+  <!-- Scripts — en el orden correcto de dependencias -->
+  <script src="spells.js?v=12" defer></script>
+  <script src="goblins.js?v=12" defer></script>
+  <script src="script.js?v=12" defer></script>
+</body>
+</html>

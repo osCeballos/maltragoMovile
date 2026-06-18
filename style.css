@@ -1,0 +1,964 @@
+/* ============================================================
+   style.css — Mal Trago | Mobile-first, táctil
+   ============================================================
+
+   Tabla de contenidos:
+   1. Tokens y variables CSS
+   2. Reset y base mobile-first
+   3. Tipografía
+   4. Utilidades compartidas
+   5. Pantalla de inicio (#screen-start)
+   6. Pantalla de juego (#screen-game)
+   7. Popup de reto (#popup-reto)
+   8. Popup de ajustes (#popup-settings)
+   9. Animaciones y keyframes
+   10. Accesibilidad (prefers-reduced-motion, focus-visible)
+   ============================================================ */
+
+/* ============================================================
+   1. TOKENS Y VARIABLES CSS
+   ============================================================ */
+:root {
+  /* Paleta taberna */
+  --color-bg: #1a0d05;
+  --color-bg-mid: #2a1a0e;
+  --color-bg-light: #3d2008;
+  --color-wood-dark: #3b1f0a;
+  --color-wood-mid: #6b3a1f;
+  --color-wood-light: #a0622a;
+  --color-parchment: #e8d5a3;
+  --color-parchment-dark: #c4a96b;
+  --color-gold: #d4a017;
+  --color-gold-light: #f5c842;
+  --color-red-danger: #8b1a1a;
+  --color-red-bright: #cc2222;
+  --color-green-good: #2d6a2d;
+  --color-green-bright: #4caf50;
+  --color-text-light: #f0e6cc;
+  --color-text-dark: #1a0d05;
+  --color-text-muted: #a08060;
+  --color-overlay: rgba(10, 5, 2, 0.82);
+  --color-spell-badge: #4a2d0a;
+
+  /* Tipografía */
+  --font-display: 'MedievalSharp', 'Cinzel', 'Palatino Linotype', Georgia, serif;
+  --font-body: 'Lato', 'Segoe UI', system-ui, sans-serif;
+
+  /* Espaciado (base rem = 16px) */
+  --sp-xs: 0.25rem;
+  /* 4px  */
+  --sp-sm: 0.5rem;
+  /* 8px  */
+  --sp-md: 1rem;
+  /* 16px */
+  --sp-lg: 1.5rem;
+  /* 24px */
+  --sp-xl: 2rem;
+  /* 32px */
+  --sp-2xl: 3rem;
+  /* 48px */
+
+  /* Touch targets */
+  --touch-min: 2.75rem;
+  /* 44px — mínimo WCAG 2.5.5 */
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  /* Sombras */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-popup: 0 8px 32px rgba(0, 0, 0, 0.85);
+  --shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+
+  /* Transiciones */
+  --transition-fast: 150ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-slow: 400ms ease-out;
+
+  /* Z-index stack */
+  --z-game: 10;
+  --z-overlay: 100;
+  --z-popup: 200;
+  --z-toast: 300;
+}
+
+/* ============================================================
+   2. RESET Y BASE MOBILE-FIRST
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* Optimizaciones táctiles */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+html {
+  /* Bloquear zoom accidental en inputs */
+  font-size: 16px;
+  height: 100%;
+  /* Previene scroll de rebote en iOS */
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text-light);
+  min-height: 100%;
+  min-height: 100dvh;
+  /* Dynamic viewport height para móvil */
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  /* Sin selección de texto en juego */
+  -webkit-user-select: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  color: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* ============================================================
+   3. TIPOGRAFÍA
+   ============================================================ */
+/* Carga de fuentes desde Google Fonts (aplicar en index.html con preconnect) */
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+}
+
+/* ============================================================
+   4. UTILIDADES COMPARTIDAS
+   ============================================================ */
+
+/* Contenedor principal de pantallas */
+#app {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Pantalla genérica */
+.screen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Oculta por defecto; se activa con clase .active */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Región aria-live para anuncios dinámicos */
+#live-region {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Toast eliminado — siempre oculto */
+#toast,
+#toast.visible {
+  display: none !important;
+}
+
+
+/* ============================================================
+   5. PANTALLA DE INICIO (#screen-start)
+   ============================================================ */
+#screen-start {
+  background:
+    linear-gradient(to bottom, rgba(26, 13, 5, 0.7) 0%, rgba(26, 13, 5, 0.9) 100%),
+    url('Assets/Fondos/fndo_principal.png') center/cover no-repeat;
+  padding: var(--sp-lg) var(--sp-md);
+  gap: var(--sp-md);
+  overflow-y: auto;
+}
+
+
+
+
+
+/* Selector de goblins */
+.goblin-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+}
+
+.goblin-section-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--color-parchment);
+  letter-spacing: 0.04em;
+}
+
+/* Cuadrícula 3×3 */
+.goblin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-sm);
+}
+
+.goblin-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 2px solid var(--color-wood-mid);
+  background: var(--color-bg-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  /* Área táctil mínima garantizada por aspect-ratio + grid */
+}
+
+.goblin-cell img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.goblin-cell:active {
+  transform: scale(0.94);
+}
+
+.goblin-cell.selected {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px var(--color-gold-light), var(--shadow-card);
+  animation: pulse-gold 1.6s ease-in-out infinite;
+}
+
+/* Info del goblin seleccionado */
+.goblin-info {
+  background: rgba(42, 26, 14, 0.85);
+  border: 1px solid var(--color-wood-mid);
+  border-radius: var(--radius-md);
+  padding: var(--sp-sm) var(--sp-md);
+  min-height: 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+}
+
+.goblin-info-name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--color-gold-light);
+}
+
+.goblin-info-desc {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.goblin-info-empty {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+  margin: auto;
+}
+
+/* Rasgos del goblin (badges) */
+.goblin-rasgos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-xs);
+  margin-top: var(--sp-xs);
+}
+
+.rasgo-badge {
+  font-size: 0.7rem;
+  background: var(--color-spell-badge);
+  color: var(--color-parchment);
+  border-radius: 999px;
+  padding: 2px var(--sp-sm);
+  border: 1px solid var(--color-wood-light);
+}
+
+/* Botón Empezar */
+#btn-start-game {
+  position: relative;
+  min-height: 5.5rem;
+  width: 100%;
+  background: url('Assets/Botones/btn_fondoRetos.png') center/100% 100% no-repeat;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 5vw, 1.4rem);
+  color: var(--color-parchment);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.08em;
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+  margin-bottom: var(--sp-lg);
+}
+
+#btn-start-game:active {
+  transform: scale(0.96);
+  filter: brightness(0.85);
+}
+
+/* ============================================================
+   6. PANTALLA DE JUEGO (#screen-game)
+   ============================================================ */
+#screen-game {
+  background: url('Assets/Fondos/fndo_principal.png') top center/cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* — HUD Superior — */
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-sm) var(--sp-sm) 0;
+  z-index: var(--z-game);
+}
+
+.hud-potions {
+  /* 56×56px táctil cómodo */
+  width: 4.5rem;
+  height: 4.5rem;
+  min-width: 4.5rem;
+  min-height: 4.5rem;
+  background: url('Assets/Fondos/fndo_pociones.png') center/100% 100% no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--sp-xs);
+  flex-shrink: 0;
+}
+
+.hud-potions img {
+  width: 1.5rem;
+  height: auto;
+}
+
+.hud-potions-count {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--color-text-dark);
+  font-weight: 700;
+  line-height: 1;
+}
+
+#btn-settings {
+  /* 56×56px táctil cómodo */
+  width: 4.5rem;
+  height: 4.5rem;
+  min-width: 4.5rem;
+  min-height: 4.5rem;
+  background: url('Assets/Botones/btn_fondoAjustes.png') center/100% 100% no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+#btn-settings:active {
+  transform: scale(0.9);
+}
+
+#btn-settings img {
+  width: 1.6rem;
+  height: auto;
+  pointer-events: none;
+}
+
+/* — Área de conjuros activos — */
+.active-spells-bar {
+  display: flex;
+  gap: var(--sp-xs);
+  padding: var(--sp-xs) var(--sp-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-height: 0;
+  flex-shrink: 0;
+}
+
+.active-spells-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.active-spells-bar:empty {
+  display: none;
+}
+
+.spell-chip {
+  white-space: nowrap;
+  font-size: 0.7rem;
+  background: var(--color-spell-badge);
+  color: var(--color-parchment);
+  border: 1px solid var(--color-gold);
+  border-radius: 999px;
+  padding: 3px var(--sp-sm);
+  flex-shrink: 0;
+}
+
+/* — Zona del goblin (centro) — */
+.goblin-stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  flex-grow: 1;
+  /* Permite que el escenario ocupe todo el espacio disponible */
+}
+
+#goblin-avatar {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(250px, 85%, 420px);
+  height: auto;
+  object-fit: contain;
+  z-index: 2; /* Mayor que z-index del overlay de barriles */
+  transition: filter var(--transition-slow);
+}
+
+#goblin-avatar.dead {
+  filter: grayscale(1) brightness(0.5);
+}
+
+#goblin-overlay {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 393 / 269;
+  background: url('Assets/Fondos/fndo_cajas.png') center / 100% 100% no-repeat;
+  z-index: 10;
+  pointer-events: none;
+}
+
+
+/* Mensaje de goblin muerto */
+#dead-message {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(139, 26, 26, 0.9);
+  color: var(--color-text-light);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  text-align: center;
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-red-bright);
+  z-index: 3;
+  display: none;
+}
+
+#dead-message.visible {
+  display: block;
+}
+
+/* — Zona de cartas — */
+.cards-area {
+  display: flex;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm);
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-game);
+}
+
+.card-slot {
+  position: relative;
+  width: calc((100% - 5 * var(--sp-sm)) / 4);
+  max-width: 90px;
+  aspect-ratio: 2/3;
+  border-radius: var(--radius-sm);
+  perspective: 1000px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.card-slot:not(.revealed):hover {
+  transform: translateY(-4px) scale(1.04);
+}
+
+.card-slot:not(.revealed):active {
+  transform: translateY(-2px) scale(0.96);
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  background: url('Assets/Iconos/carta.png') center/cover no-repeat;
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.card-front {
+  z-index: 1;
+  transform: rotateY(180deg);
+}
+
+.card-front.good {
+  background: url('Assets/Iconos/reversaCartaCorazon.png') center/cover no-repeat;
+}
+
+.card-front.bad {
+  background: url('Assets/Iconos/reversaCartaCalavera.png') center/cover no-repeat;
+}
+
+/* Carta revelada (sin interacción) */
+.card-slot.revealed {
+  pointer-events: none;
+  opacity: 1;
+}
+
+/* Shake al perder poción */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(6px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* — Botón Retos — */
+.reto-area {
+  padding: var(--sp-sm) var(--sp-md) var(--sp-md);
+  z-index: var(--z-game);
+}
+
+#btn-reto {
+  position: relative;
+  width: 100%;
+  min-height: 6rem;
+  background: url('Assets/Botones/btn_fondoRetos.png') center/100% 100% no-repeat;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 5.5vw, 1.6rem);
+  color: var(--color-parchment);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.1em;
+  transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+#btn-reto:active {
+  transform: scale(0.96);
+  filter: brightness(0.85);
+}
+
+#btn-reto:disabled,
+#btn-reto[aria-disabled="true"] {
+  filter: grayscale(0.8) brightness(0.5);
+  pointer-events: none;
+}
+
+/* Botón de revivir (reemplaza a Retos cuando está muerto) */
+#btn-revive {
+  width: 100%;
+  min-height: 3.8rem;
+  background: var(--color-red-danger);
+  border: 2px solid var(--color-red-bright);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+  letter-spacing: 0.06em;
+  display: none;
+}
+
+#btn-revive.visible {
+  display: block;
+}
+
+#btn-revive:active {
+  filter: brightness(0.8);
+}
+
+/* ============================================================
+   7. POPUP DE RETO (#popup-reto)
+   ============================================================ */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-xl) var(--sp-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.popup-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.popup-box {
+  /* Solo el PNG de pergamino como fondo, sin color sólido amarillo */
+  background: url('Assets/Fondos/fndo_nombrePersonaje.png') center/100% 100% no-repeat;
+  background-color: transparent;
+  border-radius: var(--radius-lg);
+  /* Espacio interno con margen para que el texto no llegue a las esquinas del PNG */
+  padding: var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  /* Flex para poder anclar el "toca para continuar" al fondo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(0.8);
+  transition: transform var(--transition-normal);
+  box-shadow: var(--shadow-popup);
+}
+
+.popup-overlay.visible .popup-box {
+  transform: scale(1);
+}
+
+.popup-category-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-family: var(--font-display);
+  background: var(--color-spell-badge);
+  color: var(--color-parchment);
+  border-radius: 999px;
+  padding: 2px var(--sp-sm);
+  margin-bottom: var(--sp-sm);
+  border: 1px solid var(--color-wood-light);
+}
+
+.popup-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 5vw, 1.5rem);
+  color: var(--color-text-dark);
+  margin-bottom: var(--sp-md);
+  line-height: 1.2;
+}
+
+.popup-text {
+  font-size: clamp(0.95rem, 4vw, 1.1rem);
+  color: #3a2a0a;
+  line-height: 1.5;
+  margin-bottom: var(--sp-lg);
+}
+
+.popup-persistent-note {
+  font-size: 0.8rem;
+  color: var(--color-red-danger);
+  font-style: italic;
+  margin-bottom: var(--sp-md);
+}
+
+.popup-continue {
+  /* Anclar al fondo del popup */
+  margin-top: auto;
+  padding-top: var(--sp-md);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: blink 1.8s ease-in-out infinite;
+  align-self: stretch;
+  text-align: center;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ============================================================
+   8. POPUP DE AJUSTES (#popup-settings)
+   ============================================================ */
+.settings-box {
+  background: var(--color-bg-mid);
+  border: 2px solid var(--color-wood-mid);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-xl) var(--sp-lg);
+  max-width: 340px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform var(--transition-normal);
+}
+
+.popup-overlay.visible .settings-box {
+  transform: scale(1);
+}
+
+.settings-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--color-gold-light);
+}
+
+.settings-btn {
+  min-height: var(--touch-min);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  padding: var(--sp-sm) var(--sp-md);
+  transition: filter var(--transition-fast), transform var(--transition-fast);
+}
+
+.settings-btn:active {
+  filter: brightness(0.85);
+  transform: scale(0.97);
+}
+
+.settings-btn--danger {
+  background: var(--color-red-danger);
+  color: var(--color-text-light);
+  border: 2px solid var(--color-red-bright);
+}
+
+.settings-btn--danger.confirm-active {
+  background: var(--color-gold) !important;
+  color: var(--color-text-dark) !important;
+  border-color: var(--color-gold-light) !important;
+  animation: pulse-gold 1s infinite;
+}
+
+.settings-btn--primary {
+  background: var(--color-wood-mid);
+  color: var(--color-parchment);
+  border: 2px solid var(--color-wood-light);
+}
+
+.settings-btn--secondary {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-text-muted);
+}
+
+/* ============================================================
+   9. ANIMACIONES Y KEYFRAMES
+   ============================================================ */
+
+/* Selección de goblin */
+@keyframes pulse-gold {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px var(--color-gold-light), var(--shadow-card);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px var(--color-gold), var(--shadow-card);
+  }
+}
+
+/* Shake de pociones */
+@keyframes shake-icon {
+
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+
+  20% {
+    transform: translateX(-5px) rotate(-8deg);
+  }
+
+  40% {
+    transform: translateX(5px) rotate(8deg);
+  }
+
+  60% {
+    transform: translateX(-3px) rotate(-5deg);
+  }
+
+  80% {
+    transform: translateX(3px) rotate(5deg);
+  }
+}
+
+.shake {
+  animation: shake-icon 0.35s ease-in-out;
+}
+
+/* Muerte del goblin: pantalla entera en escala de grises.
+   El botón #btn-revive queda excluido del filtro mediante un
+   wrapper de referencia: aplicamos el filtro al screen-game
+   y luego lo cancelamos solo en btn-revive. */
+#screen-game.goblin-dead {
+  filter: grayscale(1) brightness(0.75);
+  transition: filter var(--transition-slow);
+}
+
+/* El botón de revivir recupera su color aunque el padre esté en gris */
+#screen-game.goblin-dead #btn-revive {
+  filter: grayscale(0) brightness(1);
+  /* No hay forma de 'cancelar' un filter heredado en CSS estándar,
+     pero podemos usar saturate + hue-rotate para contrarrestarlo
+     aproximadamente, o simplemente re-aplicar el color via position:fixed.
+     La solución limpia es sacar btn-revive fuera del flujo filtrado: */
+  position: relative;
+  z-index: 10;
+}
+
+/* Alternativa más robusta: el área de reto completa sale del filtro */
+#screen-game.goblin-dead .reto-area {
+  filter: grayscale(0) brightness(1.4);
+}
+
+/* Revivir: flash verde */
+@keyframes revive-flash {
+  0% {
+    background-color: transparent;
+  }
+
+  30% {
+    background-color: rgba(76, 175, 80, 0.3);
+  }
+
+  100% {
+    background-color: transparent;
+  }
+}
+
+#screen-game.goblin-revived {
+  animation: revive-flash 0.6s ease-out forwards;
+}
+
+/* Transición de entrada de pantalla */
+@keyframes slide-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.screen.active {
+  animation: slide-in var(--transition-normal) ease-out;
+}
+
+/* ============================================================
+   10. ACCESIBILIDAD
+   ============================================================ */
+
+/* Focus visible (nunca eliminar outline sin reemplazarlo) */
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Respetar preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
