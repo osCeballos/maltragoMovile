@@ -375,7 +375,10 @@ function seleccionarCarta(index) {
 function aplicarEfectoCarta(tipo) {
   if (tipo === 'good') {
     // La propia carta ya muestra visualmente el resultado — sin toast
-    addLog('Poción segura... por esta vez 💚');
+    // Carta buena: gana 1 poción
+    gameState.potions = Math.min(MAX_POTIONS, gameState.potions + 1);
+    document.getElementById('hud-potions-count').textContent = gameState.potions;
+    addLog(`Poción segura 💚 Ganas 1 poción. Total: ${gameState.potions}.`);
   } else {
     addLog('¡Poción envenenada! 💀');
     perderPocion();
@@ -400,26 +403,25 @@ function comprobarFinCartas() {
    ============================================================ */
 
 /**
- * Descuenta 1 poción. Si llega a 0, mata al goblin.
+ * Descuenta 1 poción.
+ * Muerte cuando llega a -1: 0 significa "sin pociones pero vivo".
  */
 function perderPocion() {
-  if (gameState.potions > 0) {
-    gameState.potions--;
-    addLog(`Pierdes 1 poción. Te quedan ${gameState.potions}.`);
+  gameState.potions--;
+  addLog(`Pierdes 1 poción. Te quedan ${gameState.potions}.`);
 
-    // Shake en el icono de pociones
-    const icon = document.getElementById('hud-potions');
-    icon.classList.remove('shake');
-    // Force reflow para reiniciar animación
-    void icon.offsetWidth;
-    icon.classList.add('shake');
-    icon.addEventListener('animationend', () => icon.classList.remove('shake'), { once: true });
+  // Shake en el icono de pociones
+  const icon = document.getElementById('hud-potions');
+  icon.classList.remove('shake');
+  void icon.offsetWidth; // Force reflow para reiniciar animación
+  icon.classList.add('shake');
+  icon.addEventListener('animationend', () => icon.classList.remove('shake'), { once: true });
 
-    document.getElementById('hud-potions-count').textContent = gameState.potions;
-    anunciarLiveRegion(`Pierdes una poción. Te quedan ${gameState.potions} pociones.`);
-  }
+  document.getElementById('hud-potions-count').textContent = gameState.potions;
+  anunciarLiveRegion(`Pierdes una poción. Te quedan ${gameState.potions} pociones.`);
 
-  if (gameState.potions <= 0) {
+  // Morir solo cuando llega a -1 (0 = vivo sin pociones)
+  if (gameState.potions < 0) {
     matarGoblin();
   }
 }
@@ -444,10 +446,11 @@ function matarGoblin() {
  */
 function revivirGoblin() {
   gameState.isDead = false;
-  // Revive con 1 poción (reglas de mesa)
-  gameState.potions = 1;
-  addLog('✨ ¡Has revivido! Comienzas con 1 poción.');
-  anunciarLiveRegion('¡Has revivido! Tienes 1 poción.');
+  // Conserva las pociones que tenía al morir (puede ser 0 o negativo)
+  // Si estaba en -1, lo dejamos en 0 (muerto justo, revive sin pociones)
+  if (gameState.potions < 0) gameState.potions = 0;
+  addLog(`✨ ¡Has revivido! Tienes ${gameState.potions} poción(es).`);
+  anunciarLiveRegion(`¡Has revivido! Tienes ${gameState.potions} pociones.`);
   guardarEstado();
 
   const gameScreen = document.getElementById('screen-game');
