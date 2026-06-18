@@ -42,7 +42,7 @@ let gameState = {
 
 const MAX_POTIONS   = 5;   // máximo pociones acumulables (diseño de juego)
 const MAX_ANTIDOTES = 1;   // máximo antídotos — siempre 1 (reglas)
-const INITIAL_POTIONS    = 1;
+const INITIAL_POTIONS    = 3;
 const INITIAL_ANTIDOTES  = 1;
 
 // Categorías de hechizos (para etiquetas en el popup)
